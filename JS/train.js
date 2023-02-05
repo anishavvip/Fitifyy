@@ -15,13 +15,13 @@ let brain;
 function setup() {
     createCanvas(640, 480);
     let options = {
-        inputs: 34,
+        inputs: 12,
         outputs: 4,
         task: 'classification',
         debug: true
     }
     brain = ml5.neuralNetwork(options);
-    brain.loadData('a.json', dataReady);
+    brain.loadData('Poses.json', dataReady);
 }
 
 function dataReady() {

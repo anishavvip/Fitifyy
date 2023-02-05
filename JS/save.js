@@ -16,11 +16,12 @@ let pose;
 let skeleton;
 
 let brain;
-
+let NotInputlist = [0, 1, 2, 3, 4]
+const list = ['Idle', 'Jog', 'Jump', 'Squats', '(L) Lunges', '(R) Lunges', 'Prisoner Squats']
 let state = 'waiting';
-let targetLabel;
+let targeLabel;
 let index = 0;
-const list = ['Idle', 'Jog', 'Jump', 'Squats', 'Lunges']
+
 function keyPressed() {
     if (key == 's') {
         brain.saveData();
@@ -39,7 +40,7 @@ function keyPressed() {
         }, 10000);
     }
 }
-keyPressed();
+
 function setup() {
     createCanvas(640, 480);
 
@@ -65,10 +66,12 @@ function gotPoses(poses) {
         if (state == 'collecting') {
             let inputs = [];
             for (let i = 0; i < pose.keypoints.length; i++) {
-                let x = pose.keypoints[i].position.x;
-                let y = pose.keypoints[i].position.y;
-                inputs.push(x);
-                inputs.push(y);
+                if (!NotInputlist.includes(i)) {
+                    let x = pose.keypoints[i].position.x;
+                    let y = pose.keypoints[i].position.y;
+                    inputs.push(x);
+                    inputs.push(y);
+                }
             }
             let target = [targetLabel];
             brain.addData(inputs, target);
@@ -96,11 +99,13 @@ function draw() {
             line(a.position.x, a.position.y, b.position.x, b.position.y);
         }
         for (let i = 0; i < pose.keypoints.length; i++) {
-            let x = pose.keypoints[i].position.x;
-            let y = pose.keypoints[i].position.y;
-            fill(0);
-            stroke(255);
-            ellipse(x, y, 16, 16);
+            if (!NotInputlist.includes(i)) {
+                let x = pose.keypoints[i].position.x;
+                let y = pose.keypoints[i].position.y;
+                fill(0);
+                stroke(255);
+                ellipse(x, y, 16, 16);
+            }
         }
     }
 }
