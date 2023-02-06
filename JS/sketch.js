@@ -5,8 +5,10 @@ let skeleton;
 
 let brain;
 let poseLabel = '';
-
+let Lunges = 1;
+let LungesKick = 1;
 let NotInputlist = [0, 1, 2, 3, 4]
+
 function setup() {
     createCanvas(320, 320);
     video = createCapture(VIDEO);
@@ -47,7 +49,6 @@ function classifyPose() {
                 inputs.push(y);
             }
         }
-        console.log(inputs);
         brain.classify(inputs, gotResult);
     } else {
         setTimeout(classifyPose, 10);
@@ -55,22 +56,25 @@ function classifyPose() {
     }
 }
 
-let Lunges = 1;
-// ['Idle', 'Jog', 'Jump', 'Squats', '(L) Lunges', '(R) Lunges', 'Surrender', 'High Knees',
-// '(R) Lunge Kick', '(L) Lunge Kick']
+
+// ['Idle', 'Jog', 'Jump', 'Squats', '(L) Lunges', '(R) Lunges', 'Surrender', 'High Knees']
 function gotResult(error, results) {
 
     if (results) {
-        if (results[0].confidence >= 0.80) {
+        if (results[0].confidence > 0.85) {
             poseLabel = results[0].label;
-            if (poseLabel == 'Jog' || poseLabel == 'High Knees') {
+
+            if (poseLabel == 'Jog') {
                 GlobalUnityInstance.SendMessage('Player', 'Move', Lunges + '|' + poseLabel);
             }
-            else if (poseLabel == '(L) Lunges' || poseLabel == '(L) Lunge Kick') {
+            else if (poseLabel == 'High Knees') {
+                GlobalUnityInstance.SendMessage('Player', 'Move', LungesKick + '|' + poseLabel);
+            }
+            else if (poseLabel == '(L) Lunges') {
                 Lunges = -1;
                 GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges + '|' + poseLabel);
             }
-            else if (poseLabel == '(R) Lunges' || poseLabel == '(R) Lunge Kick') {
+            else if (poseLabel == '(R) Lunges') {
                 Lunges = 1;
                 GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges + '|' + poseLabel);
             }
@@ -87,8 +91,8 @@ function gotResult(error, results) {
             poseLabel = '';
             GlobalUnityInstance.SendMessage('Player', 'Move', 0 + '|' + poseLabel);
         }
+        console.log(poseLabel);
         GlobalUnityInstance.SendMessage('Pose', 'SetText', poseLabel);
-        console.log(results[0].confidence);
         classifyPose();
     }
 }

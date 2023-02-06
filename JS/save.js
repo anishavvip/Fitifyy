@@ -17,8 +17,8 @@ let skeleton;
 
 let brain;
 let NotInputlist = [0, 1, 2, 3, 4]
-// const list = ['Idle', 'Jog', 'Jump', 'Squats', '(L) Lunges', '(R) Lunges', 'Surrender']
-const list = ['High Knees', '(R) Lunge Kick', '(L) Lunge Kick']
+// const list = ['Idle', 'Jog', 'Jump', 'Squats', '(L) Lunges', '(R) Lunges', 'Surrender','High Knees']
+const list = ['(L) Lunges', '(R) Lunges']
 let state = 'waiting';
 let targeLabel;
 let index = 0;
