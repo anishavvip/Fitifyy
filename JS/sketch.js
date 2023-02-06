@@ -56,7 +56,9 @@ function classifyPose() {
 }
 
 let Lunges = 1;
-// ['Idle', 'Jog', 'Jump', 'Squats', '(L) Lunges', '(R) Lunges','Prisoner Squats']
+let KickLunges = 1;
+// ['Idle', 'Jog', 'Jump', 'Squats', '(L) Lunges', '(R) Lunges', 'Prisoner Squats', 'High Knees',
+// '(R) Lunge Kick', '(L) Lunge Kick']
 function gotResult(error, results) {
 
     if (results) {
@@ -85,9 +87,21 @@ function gotResult(error, results) {
             else if (poseLabel == 'Prisoner Squats') {
                 GlobalUnityInstance.SendMessage('Player', 'PrisonerSquatJump');
             }
+            else if (poseLabel == 'High Knees') {
+                GlobalUnityInstance.SendMessage('Player', 'RunInPlaceMove', KickLunges);
+            }
+            else if (poseLabel == '(R) Lunge Kick') {
+                KickLunges = 1;
+                GlobalUnityInstance.SendMessage('Player', 'KickFlip', KickLunges);
+            }
+            else if (poseLabel == '(L) Lunge Kick') {
+                KickLunges = -1;
+                GlobalUnityInstance.SendMessage('Player', 'KickFlip', KickLunges);
+            }
         } else {
             poseLabel = '';
             GlobalUnityInstance.SendMessage('Player', 'Move', 0);
+            GlobalUnityInstance.SendMessage('Player', 'RunInPlaceMove', 0);
         }
         GlobalUnityInstance.SendMessage('Pose', 'SetText', poseLabel);
         console.log(results[0].confidence);
