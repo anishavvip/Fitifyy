@@ -56,52 +56,36 @@ function classifyPose() {
 }
 
 let Lunges = 1;
-let KickLunges = 1;
-// ['Idle', 'Jog', 'Jump', 'Squats', '(L) Lunges', '(R) Lunges', 'Prisoner Squats', 'High Knees',
+// ['Idle', 'Jog', 'Jump', 'Squats', '(L) Lunges', '(R) Lunges', 'Surrender', 'High Knees',
 // '(R) Lunge Kick', '(L) Lunge Kick']
 function gotResult(error, results) {
 
     if (results) {
         if (results[0].confidence >= 0.80) {
             poseLabel = results[0].label;
-            if (poseLabel == 'Jog') {
-                GlobalUnityInstance.SendMessage('Player', 'Move', Lunges);
+            if (poseLabel == 'Jog' || poseLabel == 'High Knees') {
+                GlobalUnityInstance.SendMessage('Player', 'Move', Lunges + '|' + poseLabel);
             }
-            else if (poseLabel == '(L) Lunges') {
+            else if (poseLabel == '(L) Lunges' || poseLabel == '(L) Lunge Kick') {
                 Lunges = -1;
-                GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges);
+                GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges + '|' + poseLabel);
             }
-            else if (poseLabel == '(R) Lunges') {
+            else if (poseLabel == '(R) Lunges' || poseLabel == '(R) Lunge Kick') {
                 Lunges = 1;
-                GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges);
+                GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges + '|' + poseLabel);
             }
-            else if (poseLabel == 'Jump') {
-                GlobalUnityInstance.SendMessage('Player', 'Jump');
+            else if (poseLabel == 'Jump' || poseLabel == 'Surrender') {
+                GlobalUnityInstance.SendMessage('Player', 'Jump', poseLabel);
             }
             else if (poseLabel == 'Idle') {
-                GlobalUnityInstance.SendMessage('Player', 'Move', 0);
+                GlobalUnityInstance.SendMessage('Player', 'Move', 0 + '|' + poseLabel);
             }
             else if (poseLabel == 'Squats') {
-                GlobalUnityInstance.SendMessage('Player', 'Fight');
-            }
-            else if (poseLabel == 'Prisoner Squats') {
-                GlobalUnityInstance.SendMessage('Player', 'PrisonerSquatJump');
-            }
-            else if (poseLabel == 'High Knees') {
-                GlobalUnityInstance.SendMessage('Player', 'RunInPlaceMove', KickLunges);
-            }
-            else if (poseLabel == '(R) Lunge Kick') {
-                KickLunges = 1;
-                GlobalUnityInstance.SendMessage('Player', 'KickFlip', KickLunges);
-            }
-            else if (poseLabel == '(L) Lunge Kick') {
-                KickLunges = -1;
-                GlobalUnityInstance.SendMessage('Player', 'KickFlip', KickLunges);
+                GlobalUnityInstance.SendMessage('Player', 'Fight', poseLabel);
             }
         } else {
             poseLabel = '';
-            GlobalUnityInstance.SendMessage('Player', 'Move', 0);
-            GlobalUnityInstance.SendMessage('Player', 'RunInPlaceMove', 0);
+            GlobalUnityInstance.SendMessage('Player', 'Move', 0 + '|' + poseLabel);
         }
         GlobalUnityInstance.SendMessage('Pose', 'SetText', poseLabel);
         console.log(results[0].confidence);
