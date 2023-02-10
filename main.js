@@ -5,6 +5,8 @@
 let Lunges = 1;
 let model, webcam, ctx, labelContainer, maxPredictions;
 let listOfProbabilities = [];
+let inputs = [];
+
 async function init() {
     const modelURL = "./JS/Model/model.json";
     const metadataURL = "./JS/Model/metadata.json";
@@ -47,8 +49,9 @@ async function predict() {
     }
 
     let maxVal = Math.max.apply(Math, listOfProbabilities);
+    let minScore = Math.min.apply(Math, inputs);
     if (GlobalUnityInstance != null) {
-        if (maxVal > 0.95) {
+        if (maxVal > 0.95 && minScore > 0.50) {
             let str = prediction[listOfProbabilities.indexOf(maxVal)].className;
             poseLabel = str;
             // Walk
@@ -76,7 +79,7 @@ async function predict() {
                 GlobalUnityInstance.SendMessage('Player', 'Fight', poseLabel);
             }
         } else {
-            poseLabel = '';
+            poseLabel = 'REPOSITION YOURSELF';
             GlobalUnityInstance.SendMessage('Player', 'Move', 0 + '|' + poseLabel);
         }
         console.log(poseLabel);
@@ -92,6 +95,12 @@ function drawPose(pose) {
         // draw the keypoints and skeleton
         if (pose) {
             const minPartConfidence = 0.5;
+            inputs = [];
+            for (let i = 5; i < pose.keypoints.length - 2; i++) {
+                let x = pose.keypoints[i].score;
+                inputs.push(x);
+            }
+            console.log(inputs);
             tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx);
             tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx);
         }
