@@ -8,8 +8,8 @@ let listOfProbabilities = [];
 let inputs = [];
 
 async function init() {
-    const modelURL = "./JS/Model/model.json";
-    const metadataURL = "./JS/Model/metadata.json";
+    const modelURL = "./Model/model.json";
+    const metadataURL = "./Model/metadata.json";
 
     // load the model and metadata
     // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
@@ -51,11 +51,21 @@ async function predict() {
     let maxVal = Math.max.apply(Math, listOfProbabilities);
     let minScore = Math.min.apply(Math, inputs);
     if (GlobalUnityInstance != null) {
-        if (maxVal > 0.95 && minScore > 0.50) {
+        if (maxVal > 0.95 && minScore >= 0.2) {
             let str = prediction[listOfProbabilities.indexOf(maxVal)].className;
             poseLabel = str;
+
+            //     "Idle",
+            //     "(L) Lunges",
+            //     "(R) Lunges",
+            //     "High Knees",
+            //     "Squats",
+            //     "Surrender Squats",
+            //     "(L) Oblique Crunches",
+            //     "(R) Oblique Crunches"
+
             // Walk
-            if (poseLabel == 'Jog') {
+            if (poseLabel == 'High Knees') {
                 GlobalUnityInstance.SendMessage('Player', 'Move', Lunges + '|' + poseLabel);
             }
             // Turn
@@ -68,14 +78,21 @@ async function predict() {
                 GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges + '|' + poseLabel);
             }
             // Jump
-            else if (poseLabel == 'Jumping Jacks' || poseLabel == 'Surrender') {
+            else if (poseLabel == '(L) Oblique Crunches') {
+                Lunges = -1;
+                GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges + '|' + poseLabel);
+                GlobalUnityInstance.SendMessage('Player', 'Jump', poseLabel);
+            }
+            else if (poseLabel == '(R) Oblique Crunches') {
+                Lunges = 1;
+                GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges + '|' + poseLabel);
                 GlobalUnityInstance.SendMessage('Player', 'Jump', poseLabel);
             }
             else if (poseLabel == 'Idle') {
                 GlobalUnityInstance.SendMessage('Player', 'Move', 0 + '|' + poseLabel);
             }
             // Fight
-            else if (poseLabel == 'Squats') {
+            else if (poseLabel == 'Squats' || poseLabel == 'Surrender Squats') {
                 GlobalUnityInstance.SendMessage('Player', 'Fight', poseLabel);
             }
         } else {
@@ -94,15 +111,15 @@ function drawPose(pose) {
         ctx.drawImage(webcam.canvas, 0, 0);
         // draw the keypoints and skeleton
         if (pose) {
-            const minPartConfidence = 0.5;
+            const minPartConfidence = 0.2;
             inputs = [];
             for (let i = 5; i < pose.keypoints.length - 2; i++) {
                 let x = pose.keypoints[i].score;
                 inputs.push(x);
             }
             console.log(inputs);
-            tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx);
-            tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx);
+            tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx, 5, 'black', 1);
+            tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx, 5, 'white', 1);
         }
     }
 }

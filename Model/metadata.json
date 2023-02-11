@@ -1,0 +1,27 @@
+{
+    "tfjsVersion": "1.3.1",
+    "tmVersion": "0.8.6",
+    "packageVersion": "0.8.6",
+    "packageName": "@teachablemachine/pose",
+    "timeStamp": "2023-02-11T17:23:10.304Z",
+    "userMetadata": {},
+    "modelName": "my-pose-model",
+    "labels": [
+        "Idle",
+        "(L) Lunges",
+        "(R) Lunges",
+        "High Knees",
+        "Squats",
+        "Surrender Squats",
+        "(L) Oblique Crunches",
+        "(R) Oblique Crunches"
+    ],
+    "modelSettings": {
+        "posenet": {
+            "architecture": "MobileNetV1",
+            "outputStride": 16,
+            "inputResolution": 257,
+            "multiplier": 0.75
+        }
+    }
+}
