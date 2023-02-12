@@ -49,9 +49,10 @@ async function predict() {
     }
 
     let maxVal = Math.max.apply(Math, listOfProbabilities);
+    console.log(maxVal);
     let minScore = Math.min.apply(Math, inputs);
     if (GlobalUnityInstance != null) {
-        if (maxVal > 0.95 && minScore >= 0.2) {
+        if (maxVal > 0.75 && minScore >= 0.1) {
             let str = prediction[listOfProbabilities.indexOf(maxVal)].className;
             poseLabel = str;
 
@@ -109,7 +110,7 @@ function drawPose(pose) {
         ctx.drawImage(webcam.canvas, 0, 0);
         // draw the keypoints and skeleton
         if (pose) {
-            const minPartConfidence = 0.2;
+            const minPartConfidence = 0.1;
             inputs = [];
             for (let i = 5; i < pose.keypoints.length - 2; i++) {
                 let x = pose.keypoints[i].score;
