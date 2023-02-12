@@ -3,18 +3,17 @@
     "tmVersion": "0.8.6",
     "packageVersion": "0.8.6",
     "packageName": "@teachablemachine/pose",
-    "timeStamp": "2023-02-11T17:23:10.304Z",
+    "timeStamp": "2023-02-12T05:30:27.004Z",
     "userMetadata": {},
     "modelName": "my-pose-model",
     "labels": [
-        "Idle",
         "(L) Lunges",
         "(R) Lunges",
-        "High Knees",
+        "(L) Oblique Crunches",
+        "(R) Oblique Crunches",
         "Squats",
         "Surrender Squats",
-        "(L) Oblique Crunches",
-        "(R) Oblique Crunches"
+        "Idle"
     ],
     "modelSettings": {
         "posenet": {

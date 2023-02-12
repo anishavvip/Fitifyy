@@ -55,41 +55,39 @@ async function predict() {
             let str = prediction[listOfProbabilities.indexOf(maxVal)].className;
             poseLabel = str;
 
-            //     "Idle",
-            //     "(L) Lunges",
-            //     "(R) Lunges",
-            //     "High Knees",
-            //     "Squats",
-            //     "Surrender Squats",
-            //     "(L) Oblique Crunches",
-            //     "(R) Oblique Crunches"
+            // "(L) Lunges",
+            // "(R) Lunges",
+            // "(L) Oblique Crunches",
+            // "(R) Oblique Crunches",
+            // "Squats",
+            // "Surrender Squats",
+            // "Idle"
 
-            // Walk
-            if (poseLabel == 'High Knees') {
-                GlobalUnityInstance.SendMessage('Player', 'Move', Lunges + '|' + poseLabel);
-            }
-            // Turn
-            else if (poseLabel == '(L) Lunges') {
+            // Turn-Walk
+            if (poseLabel == '(L) Lunges') {
                 Lunges = -1;
-                GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges + '|' + poseLabel);
+                GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges);
+                GlobalUnityInstance.SendMessage('Player', 'Walk', Lunges + '|' + poseLabel);
             }
             else if (poseLabel == '(R) Lunges') {
                 Lunges = 1;
-                GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges + '|' + poseLabel);
+                GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges);
+                GlobalUnityInstance.SendMessage('Player', 'Walk', Lunges + '|' + poseLabel);
             }
             // Jump
             else if (poseLabel == '(L) Oblique Crunches') {
                 Lunges = -1;
-                GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges + '|' + poseLabel);
+                GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges);
                 GlobalUnityInstance.SendMessage('Player', 'Jump', poseLabel);
             }
             else if (poseLabel == '(R) Oblique Crunches') {
                 Lunges = 1;
-                GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges + '|' + poseLabel);
+                GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges);
                 GlobalUnityInstance.SendMessage('Player', 'Jump', poseLabel);
             }
+            // Idle
             else if (poseLabel == 'Idle') {
-                GlobalUnityInstance.SendMessage('Player', 'Move', 0 + '|' + poseLabel);
+                GlobalUnityInstance.SendMessage('Player', 'Walk', 0 + '|' + poseLabel);
             }
             // Fight
             else if (poseLabel == 'Squats' || poseLabel == 'Surrender Squats') {
@@ -97,10 +95,10 @@ async function predict() {
             }
         } else {
             poseLabel = 'REPOSITION YOURSELF';
-            GlobalUnityInstance.SendMessage('Player', 'Move', 0 + '|' + poseLabel);
+            GlobalUnityInstance.SendMessage('Player', 'Walk', 0 + '|' + poseLabel);
         }
         console.log(poseLabel);
-        GlobalUnityInstance.SendMessage('Pose', 'SetText', poseLabel);
+        GlobalUnityInstance.SendMessage('Pose', 'SetTextPoseLabel', poseLabel);
     }
     // finally draw the poses
     drawPose(pose);
