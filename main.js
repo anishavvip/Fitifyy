@@ -51,7 +51,7 @@ async function predict() {
     let maxVal = Math.max.apply(Math, listOfProbabilities);
     console.log(maxVal);
     let minScore = Math.min.apply(Math, inputs);
-    if (GlobalUnityInstance != null) {
+    if (window.unityInstance != null) {
         if (maxVal > 0.75 && minScore >= 0.1) {
             let str = prediction[listOfProbabilities.indexOf(maxVal)].className;
             poseLabel = str;
@@ -67,39 +67,39 @@ async function predict() {
             // Turn-Walk
             if (poseLabel == '(L) Lunges') {
                 Lunges = -1;
-                GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges);
-                GlobalUnityInstance.SendMessage('Player', 'Walk', Lunges + '|' + poseLabel);
+                window.unityInstance.SendMessage('Player', 'Flip', Lunges);
+                window.unityInstance.SendMessage('Player', 'Walk', Lunges + '|' + poseLabel);
             }
             else if (poseLabel == '(R) Lunges') {
                 Lunges = 1;
-                GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges);
-                GlobalUnityInstance.SendMessage('Player', 'Walk', Lunges + '|' + poseLabel);
+                window.unityInstance.SendMessage('Player', 'Flip', Lunges);
+                window.unityInstance.SendMessage('Player', 'Walk', Lunges + '|' + poseLabel);
             }
             // Jump
             else if (poseLabel == '(L) Oblique Crunches') {
                 Lunges = -1;
-                GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges);
-                GlobalUnityInstance.SendMessage('Player', 'Jump', poseLabel);
+                window.unityInstance.SendMessage('Player', 'Flip', Lunges);
+                window.unityInstance.SendMessage('Player', 'Jump', poseLabel);
             }
             else if (poseLabel == '(R) Oblique Crunches') {
                 Lunges = 1;
-                GlobalUnityInstance.SendMessage('Player', 'Flip', Lunges);
-                GlobalUnityInstance.SendMessage('Player', 'Jump', poseLabel);
+                window.unityInstance.SendMessage('Player', 'Flip', Lunges);
+                window.unityInstance.SendMessage('Player', 'Jump', poseLabel);
             }
             // Idle
             else if (poseLabel == 'Idle') {
-                GlobalUnityInstance.SendMessage('Player', 'Walk', 0 + '|' + poseLabel);
+                window.unityInstance.SendMessage('Player', 'Walk', 0 + '|' + poseLabel);
             }
             // Fight
             else if (poseLabel == 'Squats' || poseLabel == 'Surrender Squats') {
-                GlobalUnityInstance.SendMessage('Player', 'Fight', poseLabel);
+                window.unityInstance.SendMessage('Player', 'Fight', poseLabel);
             }
         } else {
             poseLabel = 'REPOSITION YOURSELF';
-            GlobalUnityInstance.SendMessage('Player', 'Walk', 0 + '|' + poseLabel);
+            window.unityInstance.SendMessage('Player', 'Walk', 0 + '|' + poseLabel);
         }
         console.log(poseLabel);
-        GlobalUnityInstance.SendMessage('Pose', 'SetTextPoseLabel', poseLabel);
+        window.unityInstance.SendMessage('Pose', 'SetTextPoseLabel', poseLabel);
     }
     // finally draw the poses
     drawPose(pose);
