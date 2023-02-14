@@ -1,0 +1,37 @@
+{
+  "project_info": {
+    "project_number": "667058156796",
+    "firebase_url": "https://fitifyy-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "fitifyy",
+    "storage_bucket": "fitifyy.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:667058156796:ios:2994637d57ede7d367d379",
+        "android_client_info": {
+          "package_name": "com.Fitify.Fitifyy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "667058156796-6kk8ckgruno6147h5vqjqqnmfpo1ho3b.apps.googleusercontent.com"
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBITZsfqaMMGeNPMB3GZZMEF17-AHCaYxQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 0
+        },
+        "appinvite_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
