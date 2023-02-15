@@ -49,7 +49,7 @@ async function predict() {
     }
 
     let maxVal = Math.max.apply(Math, listOfProbabilities);
-    console.log(maxVal);
+    // console.log(maxVal);
     let minScore = Math.min.apply(Math, inputs);
     if (window.unityInstance != null) {
         if (maxVal >= 0.95 && minScore >= 0.1) {
@@ -98,7 +98,7 @@ async function predict() {
             poseLabel = 'REPOSITION YOURSELF';
             window.unityInstance.SendMessage('Player', 'Walk', 0 + '|' + poseLabel);
         }
-        console.log(poseLabel);
+        // console.log(poseLabel);
         window.unityInstance.SendMessage('Pose', 'SetTextPoseLabel', poseLabel);
     }
     // finally draw the poses
@@ -116,7 +116,7 @@ function drawPose(pose) {
                 let x = pose.keypoints[i].score;
                 inputs.push(x);
             }
-            console.log(inputs);
+            // console.log(inputs);
             tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx, 2.5, 'black', 1);
             tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx, 2.5, 'white', 1);
         }
