@@ -52,7 +52,7 @@ async function predict() {
     console.log(maxVal);
     let minScore = Math.min.apply(Math, inputs);
     if (window.unityInstance != null) {
-        if (maxVal > 0.90 && minScore >= 0.1) {
+        if (maxVal >= 0.95 && minScore >= 0.1) {
             let str = prediction[listOfProbabilities.indexOf(maxVal)].className;
             poseLabel = str;
 
@@ -117,8 +117,8 @@ function drawPose(pose) {
                 inputs.push(x);
             }
             console.log(inputs);
-            tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx, 5, 'black', 1);
-            tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx, 5, 'white', 1);
+            tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx, 2.5, 'black', 1);
+            tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx, 2.5, 'white', 1);
         }
     }
 }
