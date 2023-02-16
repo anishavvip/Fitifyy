@@ -52,7 +52,7 @@ async function predict() {
     // console.log(maxVal);
     let minScore = Math.min.apply(Math, inputs);
     if (window.unityInstance != null) {
-        if (maxVal >= 0.95 && minScore >= 0.1) {
+        if (maxVal >= 0.85 && minScore >= 0.1) {
             let str = prediction[listOfProbabilities.indexOf(maxVal)].className;
             poseLabel = str;
 
