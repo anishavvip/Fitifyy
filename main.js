@@ -49,10 +49,10 @@ async function predict() {
     }
 
     let maxVal = Math.max.apply(Math, listOfProbabilities);
-    // console.log(maxVal);
-    let minScore = Math.min.apply(Math, inputs);
+    let arrAvg = arr => arr.reduce((a, b) => a + b, 0) / arr.length
+    let minScoreLowerHalf = arrAvg(inputs.slice(6, 10));
     if (window.unityInstance != null) {
-        if (maxVal >= 0.85 && minScore >= 0.1) {
+        if (maxVal >= 0.85 && minScoreLowerHalf >= 0.2) {
             let str = prediction[listOfProbabilities.indexOf(maxVal)].className;
             poseLabel = str;
 
@@ -64,7 +64,7 @@ async function predict() {
             // "Surrender Squats",
             // "Idle"
 
-            // Turn-Walk
+            Turn - Walk
             if (poseLabel == '(L) Lunges') {
                 Lunges = -1;
                 window.unityInstance.SendMessage('Player', 'Flip', Lunges);
@@ -98,7 +98,7 @@ async function predict() {
             poseLabel = 'REPOSITION YOURSELF';
             window.unityInstance.SendMessage('Player', 'Walk', 0 + '|' + poseLabel);
         }
-        // console.log(poseLabel);
+        console.log(poseLabel);
         window.unityInstance.SendMessage('Pose', 'SetTextPoseLabel', poseLabel);
     }
     // finally draw the poses
@@ -116,8 +116,9 @@ function drawPose(pose) {
                 let x = pose.keypoints[i].score;
                 inputs.push(x);
             }
-            // console.log(inputs);
-            tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx, 2.5, 'black', 1);
+            // console.log(pose.keypoints.slice(5, -2).slice(6, 10));
+
+            tmPose.drawKeypoints(pose.keypoints.slice(5, -2), minPartConfidence, ctx, 2.5, 'black', 1);
             tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx, 2.5, 'white', 1);
         }
     }
