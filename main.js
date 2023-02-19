@@ -64,7 +64,7 @@ async function predict() {
             // "Surrender Squats",
             // "Idle"
 
-            Turn - Walk
+            // Turn - Walk
             if (poseLabel == '(L) Lunges') {
                 Lunges = -1;
                 window.unityInstance.SendMessage('Player', 'Flip', Lunges);
