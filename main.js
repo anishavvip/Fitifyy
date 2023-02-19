@@ -118,8 +118,8 @@ function drawPose(pose) {
             }
             // console.log(pose.keypoints.slice(5, -2).slice(6, 10));
 
-            tmPose.drawKeypoints(pose.keypoints.slice(5, -2), minPartConfidence, ctx, 2.5, 'black', 1);
-            tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx, 2.5, 'white', 1);
+            // tmPose.drawKeypoints(pose.keypoints.slice(5, -2), minPartConfidence, ctx, 2.5, 'black', 1);
+            // tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx, 2.5, 'white', 1);
         }
     }
 }
