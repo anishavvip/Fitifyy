@@ -52,7 +52,7 @@ async function predict() {
     let arrAvg = arr => arr.reduce((a, b) => a + b, 0) / arr.length
     let minScoreLowerHalf = arrAvg(inputs.slice(6, 10));
     if (window.unityInstance != null) {
-        if (maxVal >= 0.85 && minScoreLowerHalf >= 0.2) {
+        if (maxVal >= 0.9 && minScoreLowerHalf >= 0.7) {
             let str = prediction[listOfProbabilities.indexOf(maxVal)].className;
             poseLabel = str;
 
