@@ -87,6 +87,7 @@ async function predict() {
                     window.unityInstance.SendMessage('Player', 'Flip', Lunges);
                 }
             }
+
             //WALK
             if (maxVal == 1) {
                 if (className == "(R) Jog" || className == "(L) Jog") {
@@ -106,28 +107,13 @@ async function predict() {
                     }, 700);
                 }
             }
-            //FIGHT
-            if (maxVal >= 0.75) {
-                if (className == "(R) Side Crunches" || className == "(L) Side Crunches") {
 
-                    if (prevMove == "(L) Side Crunches" && className == "(R) Side Crunches") {
-                        isFighting = true;
-                        poseName = "Side Crunches | Fight";
-                        window.unityInstance.SendMessage('Player', 'Fight', poseName);
-                    }
-                    else if (prevMove == "(R) Side Crunches" && className == "(L) Side Crunches") {
-                        isFighting = true;
-                        poseName = "Side Crunches | Fight";
-                        window.unityInstance.SendMessage('Player', 'Fight', poseName);
-                    }
-                    prevMove = className;
-                }
-                if (isFighting) {
-                    setTimeout(function () {
-                        poseName = "Idle";
-                        window.unityInstance.SendMessage('Player', 'Walk', 0 + '*' + poseName);
-                        isFighting = false;
-                    }, 900);
+            //FIGHT
+            if (maxVal >= 0.65) {
+                if (className == "(R) Side Crunches" || className == "(L) Side Crunches") {
+                    isFighting = true;
+                    poseName = "Side Crunches | Fight";
+                    window.unityInstance.SendMessage('Player', 'Fight', poseName);
                 }
             }
 
