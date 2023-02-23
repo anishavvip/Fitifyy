@@ -4,7 +4,12 @@
 // the link to your model provided by Teachable Machine export panel
 let Lunges = 1;
 let model, webcam, ctx, labelContainer, maxPredictions;
-let listOfProbabilities = [];
+let isWalking = false;
+let isJumping = false;
+let isFighting = false;
+let probList = [];
+let poseName = "";
+let prevMove, prevMoveJump = "";
 let inputs = [];
 
 async function init() {
@@ -44,62 +49,117 @@ async function predict() {
     // Prediction 2: run input through teachable machine classification model
     const prediction = await model.predict(posenetOutput);
 
+
     for (let i = 0; i < maxPredictions; i++) {
-        listOfProbabilities[i] = parseFloat(prediction[i].probability.toFixed(2));
+        probList[i] = parseFloat(prediction[i].probability.toFixed(2));
+        let className = prediction[i].className;
     }
 
-    let maxVal = Math.max.apply(Math, listOfProbabilities);
+    let maxVal = Math.max.apply(Math, probList);
+    let i = probList.indexOf(maxVal);
+    let className = prediction[i].className;
+
+
     let arrAvg = arr => arr.reduce((a, b) => a + b, 0) / arr.length
     let minScoreLowerHalf = arrAvg(inputs.slice(6, 10));
     if (window.unityInstance != null) {
-        if (maxVal >= 0.9 && minScoreLowerHalf >= 0.7) {
-            let str = prediction[listOfProbabilities.indexOf(maxVal)].className;
-            poseLabel = str;
+        if (minScoreLowerHalf >= 0.35) {
+            //IDLE
+            if (className == "Idle" && maxVal == 1) {
+                isJumping = false;
+                isWalking = false;
+                isFighting = false;
+                prevMove = "";
+                poseName = "Idle"
+                window.unityInstance.SendMessage('Player', 'Walk', 0 + '*' + poseName);
+            }
 
-            // "(L) Lunges",
-            // "(R) Lunges",
-            // "(L) Oblique Crunches",
-            // "(R) Oblique Crunches",
-            // "Squats",
-            // "Surrender Squats",
-            // "Idle"
+            //TURN
+            if (maxVal >= 0.9) {
+                if (className == "(R) Sumo Sidebends") {
+                    Lunges = 1;
+                    poseName = "(R) Sumo Sidebends | R-Turn"
+                    window.unityInstance.SendMessage('Player', 'Flip', Lunges);
+                }
+                if (className == "(L) Sumo Sidebends") {
+                    Lunges = -1;
+                    poseName = "(L) Sumo Sidebends | L-Turn"
+                    window.unityInstance.SendMessage('Player', 'Flip', Lunges);
+                }
+            }
+            //WALK
+            if (maxVal == 1) {
+                if (className == "(R) Jog" || className == "(L) Jog") {
+                    isWalking = true;
+                    poseName = "Jog | Walk";
+                    window.unityInstance.SendMessage('Player', 'Walk', Lunges + '*' + poseName);
+                }
+                else {
+                    isWalking = false;
+                    window.unityInstance.SendMessage('Player', 'Walk', 0 + '*' + poseName);
+                }
+                if (isWalking) {
+                    setTimeout(function () {
+                        poseName = "Idle";
+                        window.unityInstance.SendMessage('Player', 'Walk', 0 + '*' + poseName);
+                        isWalking = false;
+                    }, 500);
+                }
+            }
+            //FIGHT
+            if (maxVal >= 0.75) {
+                if (className == "(R) Side Crunches" || className == "(L) Side Crunches") {
 
-            // Turn - Walk
-            if (poseLabel == '(L) Lunges') {
-                Lunges = -1;
-                window.unityInstance.SendMessage('Player', 'Flip', Lunges);
-                window.unityInstance.SendMessage('Player', 'Walk', Lunges + '|' + poseLabel);
+                    if (prevMove == "(L) Side Crunches" && className == "(R) Side Crunches") {
+                        isFighting = true;
+                        poseName = "Side Crunches | Fight";
+                        window.unityInstance.SendMessage('Player', 'Fight', poseName);
+                    }
+                    else if (prevMove == "(R) Side Crunches" && className == "(L) Side Crunches") {
+                        isFighting = true;
+                        poseName = "Side Crunches | Fight";
+                        window.unityInstance.SendMessage('Player', 'Fight', poseName);
+                    }
+                    prevMove = className;
+                }
+                if (isFighting) {
+                    setTimeout(function () {
+                        poseName = "Idle";
+                        window.unityInstance.SendMessage('Player', 'Walk', 0 + '*' + poseName);
+                        isFighting = false;
+                    }, 500);
+                }
             }
-            else if (poseLabel == '(R) Lunges') {
-                Lunges = 1;
-                window.unityInstance.SendMessage('Player', 'Flip', Lunges);
-                window.unityInstance.SendMessage('Player', 'Walk', Lunges + '|' + poseLabel);
-            }
-            // Jump
-            else if (poseLabel == '(L) Oblique Crunches') {
-                Lunges = -1;
-                window.unityInstance.SendMessage('Player', 'Flip', Lunges);
-                window.unityInstance.SendMessage('Player', 'Jump', poseLabel);
-            }
-            else if (poseLabel == '(R) Oblique Crunches') {
-                Lunges = 1;
-                window.unityInstance.SendMessage('Player', 'Flip', Lunges);
-                window.unityInstance.SendMessage('Player', 'Jump', poseLabel);
-            }
-            // Idle
-            else if (poseLabel == 'Idle') {
-                window.unityInstance.SendMessage('Player', 'Walk', 0 + '|' + poseLabel);
-            }
-            // Fight
-            else if (poseLabel == 'Squats' || poseLabel == 'Surrender Squats') {
-                window.unityInstance.SendMessage('Player', 'Fight', poseLabel);
+
+            //JUMP
+            if (maxVal == 1) {
+                if (className == "(Up) Arm Circles" || className == "(Down) Arm Circles") {
+
+                    if (prevMoveJump == "(Up) Arm Circles" && className == "(Down) Arm Circles") {
+                        isJumping = true;
+                        poseName = "Arm Circles | Jump";
+                        window.unityInstance.SendMessage('Player', 'Jump', poseName);
+                    }
+                    else if (prevMoveJump == "(Down) Arm Circles" && className == "(Up) Arm Circles") {
+                        isJumping = true;
+                        poseName = "Arm Circles | Jump";
+                        window.unityInstance.SendMessage('Player', 'Jump', poseName);
+                    }
+                    prevMoveJump = className;
+                }
+                if (isJumping) {
+                    setTimeout(function () {
+                        poseName = "Idle";
+                        window.unityInstance.SendMessage('Player', 'Walk', 0 + '*' + poseName);
+                        isJumping = false;
+                    }, 100);
+                }
             }
         } else {
-            poseLabel = 'REPOSITION YOURSELF';
-            window.unityInstance.SendMessage('Player', 'Walk', 0 + '|' + poseLabel);
+            poseName = "Reposition Yourself"
+            window.unityInstance.SendMessage('Player', 'Walk', 0 + '*' + poseName);
         }
-        console.log(poseLabel);
-        window.unityInstance.SendMessage('Pose', 'SetTextPoseLabel', poseLabel);
+        window.unityInstance.SendMessage('Pose', 'SetTextPoseLabel', poseName);
     }
     // finally draw the poses
     drawPose(pose);
@@ -116,7 +176,6 @@ function drawPose(pose) {
                 let x = pose.keypoints[i].score;
                 inputs.push(x);
             }
-            // console.log(pose.keypoints.slice(5, -2).slice(6, 10));
 
             // tmPose.drawKeypoints(pose.keypoints.slice(5, -2), minPartConfidence, ctx, 2.5, 'black', 1);
             // tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx, 2.5, 'white', 1);
