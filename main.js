@@ -103,7 +103,7 @@ async function predict() {
                         poseName = "Idle";
                         window.unityInstance.SendMessage('Player', 'Walk', 0 + '*' + poseName);
                         isWalking = false;
-                    }, 500);
+                    }, 700);
                 }
             }
             //FIGHT
@@ -127,7 +127,7 @@ async function predict() {
                         poseName = "Idle";
                         window.unityInstance.SendMessage('Player', 'Walk', 0 + '*' + poseName);
                         isFighting = false;
-                    }, 500);
+                    }, 900);
                 }
             }
 
