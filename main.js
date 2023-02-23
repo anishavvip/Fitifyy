@@ -9,7 +9,7 @@ let isJumping = false;
 let isFighting = false;
 let probList = [];
 let poseName = "";
-let prevMove, prevMoveJump = "";
+let prevMoveJump = "";
 let inputs = [];
 
 async function init() {
