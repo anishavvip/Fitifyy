@@ -11,10 +11,11 @@ let probList = [];
 let poseName = "";
 let prevMove, prevMoveJump = "";
 let inputs = [];
-let stopRecording = true;
+let stopRecording = false;
 let className;
 
 async function init() {
+    stopRecording = false;
     const modelURL = "./Model/model.json";
     const metadataURL = "./Model/metadata.json";
 

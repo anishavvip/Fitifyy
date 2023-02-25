@@ -63,7 +63,7 @@
       }
       else if (typeof (Number(GlobalText.charAt(1))) == "number" && !GlobalText.charAt(1).match(/[a-z]/i)) {
         console.log(GlobalText);
-        stopRecording = false;
+        init();
         document.getElementById("canvas1").style.display = "block";
       } else {
         document.getElementById("canvas1").style.display = "none";
