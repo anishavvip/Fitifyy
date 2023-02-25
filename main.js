@@ -12,6 +12,8 @@ let poseName = "";
 let prevMove, prevMoveJump = "";
 let inputs = [];
 let stopRecording = false;
+let className;
+
 async function init() {
     stopRecording = false;
     const modelURL = "./Model/model.json";
@@ -71,21 +73,20 @@ async function predict() {
 
     for (let i = 0; i < maxPredictions; i++) {
         probList[i] = parseFloat(prediction[i].probability.toFixed(2));
-        let className = prediction[i].className;
+        className = prediction[i].className;
     }
-
     let maxVal = Math.max.apply(Math, probList);
     let i = probList.indexOf(maxVal);
-    let className;
+
     if (GlobalChoice == "Seated") {
         var str = prediction[i].className;
         var firstSpace = str.indexOf(" ");
         var newStr = str.slice(firstSpace);
-        className = newStr;
+        className = newStr.slice(1);
     } else {
         className = prediction[i].className;
     }
-
+    console.log(className);
     let arrAvg = arr => arr.reduce((a, b) => a + b, 0) / arr.length
     let minScoreLowerHalf = arrAvg(inputs.slice(6, 10));
     if (window.unityInstance != null) {
