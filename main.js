@@ -9,17 +9,27 @@ let isJumping = false;
 let isFighting = false;
 let probList = [];
 let poseName = "";
-let prevMoveJump = "";
+let prevMove, prevMoveJump = "";
 let inputs = [];
-
+let stopRecording = false;
 async function init() {
+    stopRecording = false;
     const modelURL = "./Model/model.json";
     const metadataURL = "./Model/metadata.json";
 
+    const modelURLS = "./SModel/model.json";
+    const metadataURLS = "./SModel/metadata.json";
     // load the model and metadata
     // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
     // Note: the pose library adds a tmPose object to your window (window.tmPose)
-    model = await tmPose.load(modelURL, metadataURL);
+
+    if (GlobalChoice != null) {
+        if (GlobalChoice == "Not Seated") {
+            model = await tmPose.load(modelURL, metadataURL);
+        } else {
+            model = await tmPose.load(modelURLS, metadataURLS);
+        }
+    }
     maxPredictions = model.getTotalClasses();
 
     // Convenience function to setup a webcam
@@ -35,14 +45,23 @@ async function init() {
     canvas.width = size; canvas.height = size;
     ctx = canvas.getContext("2d");
 }
-
+async function stop() {
+    if (webcam != null) {
+        stopRecording = true;
+        await webcam.pause();
+    }
+}
 async function loop(timestamp) {
+    if (stopRecording)
+        return;
     webcam.update(); // update the webcam frame
     await predict();
     window.requestAnimationFrame(loop);
 }
 
 async function predict() {
+    if (stopRecording)
+        return;
     // Prediction #1: run input through posenet
     // estimatePose can take in an image, video or canvas html element
     const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
@@ -57,8 +76,15 @@ async function predict() {
 
     let maxVal = Math.max.apply(Math, probList);
     let i = probList.indexOf(maxVal);
-    let className = prediction[i].className;
-
+    let className;
+    if (GlobalChoice == "Seated") {
+        var str = prediction[i].className;
+        var firstSpace = str.indexOf(" ");
+        var newStr = str.slice(firstSpace);
+        className = newStr;
+    } else {
+        className = prediction[i].className;
+    }
 
     let arrAvg = arr => arr.reduce((a, b) => a + b, 0) / arr.length
     let minScoreLowerHalf = arrAvg(inputs.slice(6, 10));
@@ -87,7 +113,6 @@ async function predict() {
                     window.unityInstance.SendMessage('Player', 'Flip', Lunges);
                 }
             }
-
             //WALK
             if (maxVal == 1) {
                 if (className == "(R) Jog" || className == "(L) Jog") {
@@ -104,16 +129,31 @@ async function predict() {
                         poseName = "Idle";
                         window.unityInstance.SendMessage('Player', 'Walk', 0 + '*' + poseName);
                         isWalking = false;
-                    }, 700);
+                    }, 500);
                 }
             }
-
             //FIGHT
-            if (maxVal >= 0.65) {
+            if (maxVal >= 0.75) {
                 if (className == "(R) Side Crunches" || className == "(L) Side Crunches") {
-                    isFighting = true;
-                    poseName = "Side Crunches | Fight";
-                    window.unityInstance.SendMessage('Player', 'Fight', poseName);
+
+                    if (prevMove == "(L) Side Crunches" && className == "(R) Side Crunches") {
+                        isFighting = true;
+                        poseName = "Side Crunches | Fight";
+                        window.unityInstance.SendMessage('Player', 'Fight', poseName);
+                    }
+                    else if (prevMove == "(R) Side Crunches" && className == "(L) Side Crunches") {
+                        isFighting = true;
+                        poseName = "Side Crunches | Fight";
+                        window.unityInstance.SendMessage('Player', 'Fight', poseName);
+                    }
+                    prevMove = className;
+                }
+                if (isFighting) {
+                    setTimeout(function () {
+                        poseName = "Idle";
+                        window.unityInstance.SendMessage('Player', 'Walk', 0 + '*' + poseName);
+                        isFighting = false;
+                    }, 500);
                 }
             }
 
@@ -152,6 +192,8 @@ async function predict() {
 }
 
 function drawPose(pose) {
+    if (stopRecording)
+        return;
     if (webcam.canvas) {
         ctx.drawImage(webcam.canvas, 0, 0);
         // draw the keypoints and skeleton
@@ -162,7 +204,7 @@ function drawPose(pose) {
                 let x = pose.keypoints[i].score;
                 inputs.push(x);
             }
-
+            console.log(inputs);
             // tmPose.drawKeypoints(pose.keypoints.slice(5, -2), minPartConfidence, ctx, 2.5, 'black', 1);
             // tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx, 2.5, 'white', 1);
         }
