@@ -28,15 +28,15 @@
     #canvas1 {
       width: 12%;
       height: auto;
-      margin-top: 7.5vh;
-      padding: 4rem;
-      margin-left: 1vw;
-      position: relative;
+      position: absolute;
+      top: 50%;
+      transform: translate(30%, -135%);
+      padding: 10px;
     }
   </style>
 </head>
 
-<body>
+<body onload="init()">
   <div id="unity-container" class="unity-desktop">
     <canvas id="unity-canvas" width=100vw height=100vh></canvas>
     <div id="unity-loading-bar">
@@ -63,13 +63,13 @@
       }
       else if (typeof (Number(GlobalText.charAt(1))) == "number" && !GlobalText.charAt(1).match(/[a-z]/i)) {
         console.log(GlobalText);
-        init();
+        stopRecording = false;
         document.getElementById("canvas1").style.display = "block";
       } else {
         document.getElementById("canvas1").style.display = "none";
         stop();
       }
-       console.log(GlobalText);
+      console.log(GlobalText);
     }
   </script>
   <script src="./main.js"></script>
